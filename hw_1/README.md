@@ -15,3 +15,10 @@ python generate_modalities.py
 ```
 
 Please note: I am running this code on the ORCD computing cluster to use H100s and to accommodate storage of this large dataset. Please update save paths in the code to your local/preferred directories.
+
+### Data Visualizations (15 pts)
+For the t-SNE dataset distribution plots discussed in the writeup, run:
+
+```
+python visualize_data.py --tsne
+```
