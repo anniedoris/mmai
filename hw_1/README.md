@@ -36,3 +36,11 @@ For the input distribution visualizations discussed in the writeup, run:
 ```
 python visualize_data.py --input_dist
 ```
+
+### Evaluation Metric (20 pts)
+
+To run the IOU metric discussed in the writeup, run:
+
+```
+python evaluation_metric.py
+```
