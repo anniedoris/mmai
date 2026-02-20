@@ -12,9 +12,10 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--samples",
-        action="store_true",
-        help="Visualize sample images"
+        "--sample_num",
+        type=int,
+        default=None,
+        help="Sample num to visualize"
     )
 
     parser.add_argument(
@@ -27,14 +28,15 @@ def parse_args():
 
 def main():
     
+    PERPLEXITY = 30
+    RANGE = 2000
+    
     args = parse_args()
     
     ##################################################
     #### t-SNE plots of image modalities ####
     ##################################################
-    if args.tsne:
-        
-        PERPLEXITY = 5
+    if args.tsne or args.sample_num is not None:
         
         # Generate CLIP embeddings for the grayscale images
         save_path_grayscale_embeds = '/orcd/data/faez/001/annie/mmai/data/grayscale_clip_embds.npy'
@@ -48,7 +50,6 @@ def main():
                 use_existing = True
                 
         if not use_existing:      
-            RANGE = 2000
             grayscale_image_inputs = [f"/orcd/data/faez/001/annie/mmai/data/images/{i}.png" for i in range(RANGE)]
             # test_images = grayscale_image_inputs[:100]
             gray_scale_clip_embds = get_clip_embeddings(grayscale_image_inputs, batch_size=1000)
@@ -58,9 +59,9 @@ def main():
             gray_scale_clip_embds = np.load(save_path_grayscale_embeds)
 
         labels = np.arange(len(gray_scale_clip_embds))
-        
-        visualize_data_distribution(gray_scale_clip_embds, num_components = 2, perplexity = PERPLEXITY, num_iterations=1000, savename = "grayscale_images_tsne.html", labels=labels, hover_text=labels, color_by_label = False)
-        
+
+        visualize_data_distribution(gray_scale_clip_embds, num_components = 2, perplexity = PERPLEXITY, num_iterations=1000, savename = "visualizations/grayscale_images_tsne.html", labels=labels, hover_text=labels, color_by_label = False)
+
         # Generate CLIP embeddings for the synthetic images
         save_path_synthetic_embeds = "/orcd/data/faez/001/annie/mmai/data/synthetic_clip_embds.npy"
         use_existing = False
@@ -73,7 +74,6 @@ def main():
                 use_existing = True
 
         if not use_existing:
-            RANGE = 2000
             synthetic_image_inputs = [f"/orcd/data/faez/001/annie/mmai/data/syn_real/{i}_gemini.png" for i in range(RANGE)]
             synthetic_clip_embds = get_clip_embeddings(synthetic_image_inputs, batch_size=1000)
             np.save(save_path_synthetic_embeds, synthetic_clip_embds)
@@ -83,7 +83,29 @@ def main():
             synthetic_clip_embds = np.load(save_path_synthetic_embeds)
 
         labels = np.arange(len(synthetic_clip_embds))
-        visualize_data_distribution(synthetic_clip_embds, num_components = 2, perplexity = PERPLEXITY, num_iterations=1000, savename = "synthetic_images_tsne.html", labels=labels, hover_text=labels, color_by_label = False)
+
+        visualize_data_distribution(synthetic_clip_embds, num_components = 2, perplexity = PERPLEXITY, num_iterations=1000, savename = "visualizations/synthetic_images_tsne.html", labels=labels, hover_text=labels, color_by_label = False)
+            
+    
+    ##################################################
+    #### Visualize samples ####
+    ##################################################
+    if args.sample_num is not None:
+        visualize_grayscale_image(args.sample_num)
+        visualize_photorealistic_image(args.sample_num)
+        visualize_point_cloud(args.sample_num)
+        print("*" * 50)
+        visualize_code(args.sample_num)
+        visualize_description(args.sample_num)
+        print("*" * 50)
+        visualize_data_distribution(gray_scale_clip_embds, num_components = 2, perplexity = PERPLEXITY, num_iterations=1000, savename = f"visualizations/grayscale_images_tsne.html", labels=labels, hover_text=labels, color_by_label = False, highlight_indices=args.sample_num)
+        visualize_data_distribution(synthetic_clip_embds, num_components = 2, perplexity = PERPLEXITY, num_iterations=1000, savename = f"visualizations/synthetic_images_tsne.html", labels=labels, hover_text=labels, color_by_label = False, highlight_indices=args.sample_num)
+
+    ##################################################
+    #### Visualize input distribution ####
+    ##################################################
+    if args.input_dist:
+        get_command_counts(RANGE)
 
 if __name__ == "__main__":
     main()

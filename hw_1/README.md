@@ -22,3 +22,17 @@ For the t-SNE dataset distribution plots discussed in the writeup, run:
 ```
 python visualize_data.py --tsne
 ```
+
+To visualize a specific sample as discussed in the writeup, run:
+
+```
+python visualize_data.py --sample_num 888
+```
+
+This will regenerate the t-SNE plots with the specified sample highlighted, and will also generate visuals for each of the five modalities.
+
+For the input distribution visualizations discussed in the writeup, run:
+
+```
+python visualize_data.py --input_dist
+```
